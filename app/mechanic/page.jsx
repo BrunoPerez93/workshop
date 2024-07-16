@@ -1,11 +1,24 @@
-import React from 'react'
+"use client";
+
+import FormMechanics from "@/components/mechanics/FormMechanics";
+import ListMechanics from "@/components/mechanics/ListMechanics";
+import { useState } from "react";
 
 const MechanicPage = () => {
-  return (
-    <div>
-      mecanico
-    </div>
-  )
-}
+  const [refresh, setRefresh] = useState(false);
 
-export default MechanicPage
+  const triggerRefresh = () => {
+    setRefresh(!refresh);
+  };
+
+  return (
+    <section className="flex flex-col h-screen justify-center items-center p-5 bg-white">
+      <h1 className="text-5xl p-5 font-bold">Administrar Usuarios</h1>
+      <FormMechanics triggerRefresh={triggerRefresh} />
+
+      <ListMechanics refresh={refresh} />
+    </section>
+  );
+};
+
+export default MechanicPage;
