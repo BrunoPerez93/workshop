@@ -4,7 +4,7 @@ const ListUsers = ({ refresh }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1); 
+  const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
 
   useEffect(() => {
@@ -15,6 +15,9 @@ const ListUsers = ({ refresh }) => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
+
+        data.sort((a, b) => b.id - a.id);
+
         setUsers(data);
       } catch (error) {
         setError(error.message);
@@ -42,9 +45,7 @@ const ListUsers = ({ refresh }) => {
             <th scope="col" className="px-6 py-3">
               Name
             </th>
-            <th scope="col" className="px-6 py-3">
-              
-            </th>
+            <th scope="col" className="px-6 py-3"></th>
           </tr>
         </thead>
         <tbody>
@@ -64,7 +65,7 @@ const ListUsers = ({ refresh }) => {
           ))}
         </tbody>
       </table>
-      
+
       {/* Pagination controls */}
       <div className="mt-5 flex justify-center items-center">
         <button
@@ -76,7 +77,9 @@ const ListUsers = ({ refresh }) => {
         </button>
         <button
           onClick={() => paginate(currentPage + 1)}
-          disabled={currentUsers.length < usersPerPage || currentUsers.length === 0}
+          disabled={
+            currentUsers.length < usersPerPage || currentUsers.length === 0
+          }
           className="px-3 py-1 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm text-gray-700 dark:text-gray-300 rounded"
         >
           Next
