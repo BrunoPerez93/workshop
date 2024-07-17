@@ -3,37 +3,37 @@
 import ModalModel from "@/modals/ModalModel";
 import { useEffect, useState } from "react";
 
-const SelectModel = ({ name }) => {
+const SelectModel = ({ selectedBrand, name }) => {
   const [models, setModels] = useState([]);
-  const [brands, setBrands] = useState([]);
+  const [allModels, setAllModels] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [messageSuccess, setMessageSuccess] = useState("");
 
   useEffect(() => {
-    const fetchModels = async () => {
-      try {
-        const response = await fetch("/api/modelos");
-        const data = await response.json();
-        setModels(data);
-      } catch (error) {
-        console.error("Error fetching models", error);
-      }
-    };
-    fetchModels();
-  }, []);
+    if (selectedBrand) {
+      console.log(`Selected Brand ID: ${selectedBrand}`);
+      const fetchModels = async () => {
+        try {
+          const response = await fetch(`/api/modelos`);
+          const data = await response.json();
+          console.log("Fetched Models:", data);
+          setAllModels(data);
+        } catch (error) {
+          console.error("Error fetching models", error);
+        }
+      };
+      fetchModels();
+    } else {
+      setModels([]);
+    }
+  }, [selectedBrand]);
 
   useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const response = await fetch("/api/brands");
-        const data = await response.json();
-        setBrands(data);
-      } catch (error) {
-        console.error("Error fetching brands", error);
-      }
-    };
-    fetchBrands();
-  }, []);
+    if (selectedBrand) {
+      const filteredModels = allModels.filter(model => model.brand_id === parseInt(selectedBrand));
+      setModels(filteredModels);
+    }
+  }, [selectedBrand, allModels]);
 
   const handleAgregarClick = () => {
     setModalOpen(true);
@@ -108,7 +108,7 @@ const SelectModel = ({ name }) => {
           <ModalModel
             onClose={handleCloseModal}
             onSubmit={handleCreateModel}
-            brands={brands}
+            selectedBrand={selectedBrand}
           />
         )}
       </div>
