@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Modal = ({ onClose, onSubmit }) => {
+const ModalBrand = ({ onClose, onSubmit }) => {
   const [brandName, setBrandName] = useState("");
 
   const handleInputChange = (e) => {
@@ -44,4 +44,4 @@ const Modal = ({ onClose, onSubmit }) => {
   );
 };
 
-export default Modal;
+export default ModalBrand;

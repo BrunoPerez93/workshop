@@ -1,12 +1,26 @@
 "use client";
 
+import ModalModel from "@/modals/ModalModel";
 import { useEffect, useState } from "react";
-import ModalBrand from "@/modals/ModalBrand";
 
-const SelectBrand = ({ name }) => {
+const SelectModel = ({ name }) => {
+  const [models, setModels] = useState([]);
   const [brands, setBrands] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [messageSuccess, setMessageSuccess] = useState("");
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const response = await fetch("/api/modelos");
+        const data = await response.json();
+        setModels(data);
+      } catch (error) {
+        console.error("Error fetching models", error);
+      }
+    };
+    fetchModels();
+  }, []);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -29,28 +43,28 @@ const SelectBrand = ({ name }) => {
     setModalOpen(false);
   };
 
-  const handleCreateBrand = async (newBrandName) => {
+  const handleCreateModel = async (newModelName, brandId) => {
     try {
-      const response = await fetch("/api/brands", {
+      const response = await fetch("/api/modelos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: newBrandName }),
+        body: JSON.stringify({ name: newModelName, brand_id: brandId }),
       });
       if (response.ok) {
-        const newBrand = await response.json();
-        setBrands([...brands, newBrand]);
+        const newModel = await response.json();
+        setModels([...models, newModel]);
         handleCloseModal();
-        setMessageSuccess("Marca Creada Con Exito");
+        setMessageSuccess("Modelo Creado Con Éxito");
         setTimeout(() => {
           setMessageSuccess("");
         }, 3000);
       } else {
-        console.error("Faild to create brand");
+        console.error("Failed to create model");
       }
     } catch (error) {
-      console.error("Error creating brand", error);
+      console.error("Error creating model", error);
     }
   };
 
@@ -64,11 +78,11 @@ const SelectBrand = ({ name }) => {
               className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
             >
               <option value="" disabled>
-                Seleccione una marca...
+                Seleccione un modelo...
               </option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.name}
+              {models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.name}
                 </option>
               ))}
             </select>
@@ -91,7 +105,11 @@ const SelectBrand = ({ name }) => {
         </div>
 
         {isModalOpen && (
-          <ModalBrand onClose={handleCloseModal} onSubmit={handleCreateBrand} />
+          <ModalModel
+            onClose={handleCloseModal}
+            onSubmit={handleCreateModel}
+            brands={brands}
+          />
         )}
       </div>
       {messageSuccess && (
@@ -103,4 +121,4 @@ const SelectBrand = ({ name }) => {
   );
 };
 
-export default SelectBrand;
+export default SelectModel;
