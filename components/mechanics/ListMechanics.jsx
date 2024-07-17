@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 
 const ListMechanics = ({ refresh }) => {
   const [mechanics, setMechanics] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const mechanicsPerPage = 5;
 
@@ -20,9 +18,7 @@ const ListMechanics = ({ refresh }) => {
 
         setMechanics(data);
       } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+        console.error(error.message);
       }
     };
 
@@ -37,8 +33,6 @@ const ListMechanics = ({ refresh }) => {
 
   return (
     <div className="relative overflow-x-auto">
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-5">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
