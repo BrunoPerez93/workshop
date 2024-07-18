@@ -1,57 +1,18 @@
-import ModalModel from "@/modals/ModalModel";
 import { useEffect, useState } from "react";
+import ModalModel from "@/modals/ModalModel";
+import useFetchBrands from "@/hooks/useFetchBrands";
+import useFetchModels from "@/hooks/useFetchModels";
 
-const SelectModel = ({ selectedBrand, name, titleModel, nameButton }) => {
-  const [models, setModels] = useState([]);
-  const [allModels, setAllModels] = useState([]);
+const SelectModel = ({ selectedBrand, name }) => {
+  const { brands } = useFetchBrands();
+  const { models, fetchModels } = useFetchModels(selectedBrand);
+
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [messageSuccess, setMessageSuccess] = useState("");
-  const [brands, setBrands] = useState([]);
   const [editModelName, setEditModelName] = useState("");
   const [selectedModelId, setSelectedModelId] = useState(null);
 
-  useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const response = await fetch(`/api/brands`);
-        const data = await response.json();
-        setBrands(data);
-      } catch (error) {
-        console.error("Error fetching brands", error);
-      }
-    };
-    fetchBrands();
-  }, []);
-
-  useEffect(() => {
-    if (selectedBrand) {
-      const fetchModels = async () => {
-        try {
-          const response = await fetch(`/api/modelos`);
-          const data = await response.json();
-          console.log("Fetched Models:", data);
-          setAllModels(data);
-        } catch (error) {
-          console.error("Error fetching models", error);
-        }
-      };
-      fetchModels();
-    } else {
-      setModels([]);
-    }
-  }, [selectedBrand]);
-
-  useEffect(() => {
-    if (selectedBrand) {
-      const filteredModels = allModels.filter(
-        (model) => model.brand_id === parseInt(selectedBrand)
-      );
-      setModels(filteredModels);
-    }
-  }, [selectedBrand, allModels]);
-
-  
   useEffect(() => {
     if (models.length > 0) {
       setSelectedModelId(models[0].id);
@@ -92,13 +53,13 @@ const SelectModel = ({ selectedBrand, name, titleModel, nameButton }) => {
         body: JSON.stringify({ name: newModelName, brand_id: brandId }),
       });
       if (response.ok) {
-        const newModel = await response.json();
-        setModels([...models, newModel]);
-        handleCloseModal();
+        await response.json();
         setMessageSuccess("Modelo Creado Con Éxito");
         setTimeout(() => {
           setMessageSuccess("");
         }, 3000);
+        handleCloseModal();
+        fetchModels();
       } else {
         console.error("Failed to create model");
       }
@@ -114,19 +75,20 @@ const SelectModel = ({ selectedBrand, name, titleModel, nameButton }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: modelId, name: editedModelName, brand_id: brandId }),
+        body: JSON.stringify({
+          id: modelId,
+          name: editedModelName,
+          brand_id: brandId,
+        }),
       });
       if (response.ok) {
-        const updatedModel = await response.json();
-        const updatedModels = models.map((model) =>
-          model.id === updatedModel.id ? updatedModel : model
-        );
-        setModels(updatedModels);
-        handleCloseModal();
+        await response.json();
         setMessageSuccess("Modelo Editado Con Éxito");
         setTimeout(() => {
           setMessageSuccess("");
         }, 3000);
+        handleCloseModal();
+        fetchModels();
       } else {
         console.error("Failed to edit model");
       }
