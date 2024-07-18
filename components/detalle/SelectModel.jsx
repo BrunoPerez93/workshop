@@ -16,7 +16,6 @@ const SelectModel = ({ selectedBrand, name, titleModel, nameButton }) => {
       try {
         const response = await fetch(`/api/brands`);
         const data = await response.json();
-        console.log("Fetched Brands:", data);
         setBrands(data);
       } catch (error) {
         console.error("Error fetching brands", error);
@@ -52,15 +51,24 @@ const SelectModel = ({ selectedBrand, name, titleModel, nameButton }) => {
     }
   }, [selectedBrand, allModels]);
 
+  
+  useEffect(() => {
+    if (models.length > 0) {
+      setSelectedModelId(models[0].id);
+    }
+  }, [models]);
+
   const handleAgregarClick = () => {
     setCreateModalOpen(true);
   };
 
   const handleEditClick = () => {
     if (selectedModelId !== null) {
-      const selectedModel = models.find((model) => model.id === parseInt(selectedModelId));
+      const selectedModel = models.find(
+        (model) => model.id === parseInt(selectedModelId)
+      );
       if (selectedModel) {
-        setEditModelName(selectedModel.name); // Update editModelName with selected model name
+        setEditModelName(selectedModel.name);
         setEditModalOpen(true);
       }
     } else {
@@ -71,7 +79,7 @@ const SelectModel = ({ selectedBrand, name, titleModel, nameButton }) => {
   const handleCloseModal = () => {
     setCreateModalOpen(false);
     setEditModalOpen(false);
-    setEditModelName(""); // Clear editModelName when modal closes
+    setEditModelName("");
   };
 
   const handleCreateModel = async (newModelName, brandId) => {
@@ -101,12 +109,12 @@ const SelectModel = ({ selectedBrand, name, titleModel, nameButton }) => {
 
   const handleEditModel = async (editedModelName, modelId, brandId) => {
     try {
-      const response = await fetch(`/api/modelos/${modelId}`, {
+      const response = await fetch(`/api/modelos`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: editedModelName, brand_id: brandId }),
+        body: JSON.stringify({ id: modelId, name: editedModelName, brand_id: brandId }),
       });
       if (response.ok) {
         const updatedModel = await response.json();
@@ -183,8 +191,8 @@ const SelectModel = ({ selectedBrand, name, titleModel, nameButton }) => {
             brands={brands}
             titleModel="Editar Modelo"
             nameButton="Editar Modelo"
-            initialModelName={editModelName} // Pass editModelName as initialModelName
-            initialBrandId={selectedBrand} // Pass selectedBrand as initialBrandId
+            initialModelName={editModelName}
+            initialBrandId={selectedBrand}
             isEdit={true}
           />
         )}

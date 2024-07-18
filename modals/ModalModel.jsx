@@ -18,6 +18,7 @@ const ModalModel = ({
     setSelectedBrandId(initialBrandId);
   }, [initialModelName, initialBrandId]);
 
+
   const handleInputChange = (e) => {
     setModelName(e.target.value);
   };
