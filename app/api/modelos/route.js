@@ -32,3 +32,30 @@ export async function POST(req) {
       });
     }
   }
+
+  export async function PUT(req) {
+    const { id, name, brand_id } = await req.json();
+  
+    try {
+      const updatedModel = await db.query(
+        "UPDATE models SET name = $1, brand_id = $2 WHERE id = $3 RETURNING *",
+        [name, brand_id, id]
+      );
+      if (updatedModel.rowCount === 0) {
+        return new Response(JSON.stringify({ error: "Model not found" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify(updatedModel.rows[0]), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      console.error(error);
+      return new Response(JSON.stringify({ error: "Database error" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }

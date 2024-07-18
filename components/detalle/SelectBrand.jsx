@@ -1,12 +1,12 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import ModalBrand from "@/modals/ModalBrand";
 
 const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
   const [brands, setBrands] = useState([]);
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [messageSuccess, setMessageSuccess] = useState("");
+  const [editBrandName, setEditBrandName] = useState("");
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -22,11 +22,28 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
   }, []);
 
   const handleAgregarClick = () => {
-    setModalOpen(true);
+    setCreateModalOpen(true);
+  };
+
+  const handleEditClick = () => {
+    if (selectedBrand) {
+      const selectedBrandObject = brands.find(
+        (brand) => brand.id.toString() === selectedBrand.toString()
+      );
+      if (selectedBrandObject) {
+        setEditBrandName(selectedBrandObject.name);
+        setEditModalOpen(true);
+      } else {
+        alert("La marca seleccionada no es válida.");
+      }
+    } else {
+      alert("Por favor, seleccione una marca para editar.");
+    }
   };
 
   const handleCloseModal = () => {
-    setModalOpen(false);
+    setCreateModalOpen(false);
+    setEditModalOpen(false);
   };
 
   const handleCreateBrand = async (newBrandName) => {
@@ -47,10 +64,44 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
           setMessageSuccess("");
         }, 3000);
       } else {
-        console.error("Faild to create brand");
+        console.error("Failed to create brand");
       }
     } catch (error) {
       console.error("Error creating brand", error);
+    }
+  };
+
+  const handleEditBrand = async (newBrandName) => {
+    if (!selectedBrand) {
+      alert("Por favor, seleccione una marca para editar.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/brands`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: selectedBrand, name: newBrandName }),
+      });
+      if (response.ok) {
+        const updatedBrand = await response.json();
+        setBrands(
+          brands.map((brand) =>
+            brand.id === updatedBrand.id ? updatedBrand : brand
+          )
+        );
+        handleCloseModal();
+        setMessageSuccess("Marca Editada Con Exito");
+        setTimeout(() => {
+          setMessageSuccess("");
+        }, 3000);
+      } else {
+        console.error("Failed to edit brand");
+      }
+    } catch (error) {
+      console.error("Error editing brand", error);
     }
   };
 
@@ -86,13 +137,28 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
             Agregar
           </button>
 
-          <button type="button" className="btn-style">
+          <button type="button" className="btn-style" onClick={handleEditClick}>
             Editar
           </button>
         </div>
 
-        {isModalOpen && (
-          <ModalBrand onClose={handleCloseModal} onSubmit={handleCreateBrand} />
+        {isCreateModalOpen && (
+          <ModalBrand
+            onClose={handleCloseModal}
+            onSubmit={handleCreateBrand}
+            titleBrand="Agregar Nueva Marca"
+            nameButton="Crear Marca"
+          />
+        )}
+
+        {isEditModalOpen && (
+          <ModalBrand
+            onClose={handleCloseModal}
+            onSubmit={handleEditBrand}
+            titleBrand="Editar Marca"
+            nameButton="Editar Marca"
+            initialBrandName={editBrandName}
+          />
         )}
       </div>
       {messageSuccess && (
