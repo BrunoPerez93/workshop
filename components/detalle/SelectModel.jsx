@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from "react";
 import ModalModel from "@/modals/ModalModel";
 import useFetchBrands from "@/hooks/useFetchBrands";
