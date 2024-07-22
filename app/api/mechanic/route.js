@@ -1,8 +1,6 @@
 import { db } from "@/utils/db";
 import { NextResponse } from "next/server";
 
-// Handler for POST requests
-
 export async function POST(req) {
   const { username } = await req.json();
 
@@ -24,7 +22,6 @@ export async function POST(req) {
   }
 }
 
-// Handler for unsupported HTTP methods
 export function OPTIONS(req, res) {
   return new Response(null, {
     status: 204,

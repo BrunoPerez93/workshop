@@ -24,7 +24,7 @@ const FormUsers = ({ triggerRefresh }) => {
       const formattedData = {
         name: formData.name,
         password: formData.password,
-        rol: formData.rol.toLowerCase(),
+        rol: formData.rol,
       };
   
       const response = await fetch("/api/users", {

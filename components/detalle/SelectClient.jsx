@@ -5,7 +5,7 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
   const [clients, setClients] = useState([]);
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [messageSuccess, setMessageSuccess] = useState("");
+  const [message, setMessage] = useState("");
   const [editClient, setEditClient] = useState(null);
 
   useEffect(() => {
@@ -21,54 +21,25 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
     fetchClients();
   }, []);
 
-  const handleAgregarClick = () => {
-    setEditClient(null);
-    setCreateModalOpen(true);
-  };
-
-  const handleEditClick = () => {
-    if (selectedClient) {
-      const selectedClientObject = clients.find(
-        (client) => client.id.toString() === selectedClient.toString()
-      );
-      if (selectedClientObject) {
-        setEditClient(selectedClientObject);
-        setEditModalOpen(true);
-      } else {
-        alert("El cliente seleccionado no es válido.");
-      }
-    } else {
-      alert("Por favor, seleccione un cliente para editar.");
-    }
-  };
-
-  const handleCloseModal = () => {
-    setCreateModalOpen(false);
-    setEditModalOpen(false);
-  };
-
   const handleCreateClient = async (newClient) => {
     try {
       const response = await fetch("/api/clients", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newClient),
       });
       if (response.ok) {
         const newClientData = await response.json();
-        setClients([...clients, newClientData]);
-        handleCloseModal();
-        setMessageSuccess("Cliente Creado Con Exito");
-        setTimeout(() => {
-          setMessageSuccess("");
-        }, 3000);
+        setClients((prev) => [...prev, newClientData]);
+        setMessage("Cliente Creado Con Exito");
       } else {
         console.error("Failed to create client");
       }
     } catch (error) {
       console.error("Error creating client", error);
+    } finally {
+      handleCloseModals();
+      setTimeout(() => setMessage(""), 3000);
     }
   };
 
@@ -76,29 +47,54 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
     try {
       const response = await fetch(`/api/clients`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedClient),
       });
       if (response.ok) {
         const updatedClientData = await response.json();
-        setClients(
-          clients.map((client) =>
+        setClients((prev) =>
+          prev.map((client) =>
             client.id === updatedClientData.id ? updatedClientData : client
           )
         );
-        handleCloseModal();
-        setMessageSuccess("Cliente Editado Con Exito");
-        setTimeout(() => {
-          setMessageSuccess("");
-        }, 3000);
+        setMessage("Cliente Editado Con Exito");
       } else {
         console.error("Failed to edit client");
       }
     } catch (error) {
       console.error("Error editing client", error);
+    } finally {
+      handleCloseModals();
+      setTimeout(() => setMessage(""), 3000);
     }
+  };
+
+  const handleOpenCreateModal = () => {
+    setEditClient(null);
+    setCreateModalOpen(true);
+  };
+
+  const handleOpenEditModal = () => {
+    if (!selectedClient) {
+      alert("Por favor, seleccione un cliente para editar.");
+      return;
+    }
+
+    const selectedClientObject = clients.find(
+      (client) => client.id.toString() === selectedClient.toString()
+    );
+
+    if (selectedClientObject) {
+      setEditClient(selectedClientObject);
+      setEditModalOpen(true);
+    } else {
+      alert("El cliente seleccionado no es válido.");
+    }
+  };
+
+  const handleCloseModals = () => {
+    setCreateModalOpen(false);
+    setEditModalOpen(false);
   };
 
   return (
@@ -126,38 +122,41 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
           <button
             type="button"
             className="btn-style mr-2"
-            onClick={handleAgregarClick}
+            onClick={handleOpenCreateModal}
           >
             Agregar
           </button>
-          <button type="button" className="btn-style" onClick={handleEditClick}>
+          <button
+            type="button"
+            className="btn-style"
+            onClick={handleOpenEditModal}
+          >
             Editar
           </button>
         </div>
-
-        {isCreateModalOpen && (
-          <ModalClient
-            title="Crear Cliente"
-            buttonLabel="Guardar"
-            onClose={handleCloseModal}
-            onSubmit={handleCreateClient}
-            initialClient={{ name: "", lastname: "", ci: "", cellphone: "" }}
-          />
-        )}
-        {isEditModalOpen && (
-          <ModalClient
-            title="Editar Cliente"
-            buttonLabel="Guardar Cambios"
-            initialClient={editClient}
-            onClose={handleCloseModal}
-            onSubmit={handleEditClient}
-          />
+        {message && (
+          <p className="mt-2 text-green-500">
+            {message}
+          </p>
         )}
       </div>
-      {messageSuccess && (
-        <p className="text-green-600 mt-3 text-sm font-semibold">
-          {messageSuccess}
-        </p>
+      {isCreateModalOpen && (
+        <ModalClient
+          title="Crear Cliente"
+          buttonLabel="Guardar"
+          onClose={handleCloseModals}
+          onSubmit={handleCreateClient}
+          initialClient={{ name: "", lastname: "", ci: "", cellphone: "" }}
+        />
+      )}
+      {isEditModalOpen && (
+        <ModalClient
+          title="Editar Cliente"
+          buttonLabel="Guardar Cambios"
+          initialClient={editClient}
+          onClose={handleCloseModals}
+          onSubmit={handleEditClient}
+        />
       )}
     </div>
   );

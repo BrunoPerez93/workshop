@@ -11,8 +11,7 @@ const SelectModel = ({ selectedBrand, name }) => {
 
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [messageSuccess, setMessageSuccess] = useState("");
-  const [messageError, setMessageError] = useState("");
+  const [messages, setMessages] = useState({ success: "", error: "" });
   const [editModelName, setEditModelName] = useState("");
   const [selectedModelId, setSelectedModelId] = useState(null);
 
@@ -22,21 +21,20 @@ const SelectModel = ({ selectedBrand, name }) => {
     }
   }, [models]);
 
-  const handleAgregarClick = () => {
-    setCreateModalOpen(true);
-  };
+  const handleAgregarClick = () => setCreateModalOpen(true);
 
   const handleEditClick = () => {
-    if (selectedModelId !== null) {
-      const selectedModel = models.find(
-        (model) => model.id === parseInt(selectedModelId)
-      );
-      if (selectedModel) {
-        setEditModelName(selectedModel.name);
-        setEditModalOpen(true);
-      }
-    } else {
+    if (selectedModelId === null) {
       alert("Por favor, seleccione un modelo para editar.");
+      return;
+    }
+
+    const selectedModel = models.find(
+      (model) => model.id === parseInt(selectedModelId)
+    );
+    if (selectedModel) {
+      setEditModelName(selectedModel.name);
+      setEditModalOpen(true);
     }
   };
 
@@ -46,57 +44,51 @@ const SelectModel = ({ selectedBrand, name }) => {
     setEditModelName("");
   };
 
+  const showMessage = (message, type) => {
+    setMessages({ ...messages, [type]: message });
+    setTimeout(() => {
+      setMessages((prev) => ({ ...prev, [type]: "" }));
+    }, 3000);
+  };
+
   const handleCreateModel = async (newModelName, brandId) => {
     try {
       const response = await fetch("/api/modelos", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newModelName, brand_id: brandId }),
       });
+
       if (response.ok) {
         await response.json();
-        setMessageSuccess("Modelo Creado Con Éxito");
-        setTimeout(() => {
-          setMessageSuccess("");
-        }, 3000);
+        showMessage("Modelo Creado Con Éxito", "success");
         handleCloseModal();
         fetchModels();
       } else {
         const result = await response.json();
-        setMessageError(result.error || "Error creando modelo");
-        setTimeout(() => {
-          setMessageError("");
-        }, 3000);
+        showMessage(result.error || "Error creando modelo", "error");
       }
     } catch (error) {
       console.error("Error creating model", error);
-      setMessageError("Error creando modelo");
-      setTimeout(() => {
-        setMessageError("");
-      }, 3000);
+      showMessage("Error creando modelo", "error");
     }
   };
+
   const handleEditModel = async (editedModelName, modelId, brandId) => {
     try {
       const response = await fetch(`/api/modelos`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: modelId,
           name: editedModelName,
           brand_id: brandId,
         }),
       });
+
       if (response.ok) {
         await response.json();
-        setMessageSuccess("Modelo Editado Con Éxito");
-        setTimeout(() => {
-          setMessageSuccess("");
-        }, 3000);
+        showMessage("Modelo Editado Con Éxito", "success");
         handleCloseModal();
         fetchModels();
       } else {
@@ -104,6 +96,7 @@ const SelectModel = ({ selectedBrand, name }) => {
       }
     } catch (error) {
       console.error("Error editing model", error);
+      showMessage("Error editando modelo", "error");
     }
   };
 
@@ -151,7 +144,7 @@ const SelectModel = ({ selectedBrand, name }) => {
             brands={brands}
             titleModel="Agregar Nuevo Modelo"
             nameButton="Crear Modelo"
-            messageError={messageError}
+            messageError={messages.error}
           />
         )}
 
@@ -170,10 +163,8 @@ const SelectModel = ({ selectedBrand, name }) => {
           />
         )}
       </div>
-      {messageSuccess && (
-        <div className="text-center p-5 rounded-md bg-green-400 text-white font-bold">
-          {messageSuccess}
-        </div>
+      {messages.success && (
+        <p className="mt-2 text-green-500">{messages.success}</p>
       )}
     </div>
   );

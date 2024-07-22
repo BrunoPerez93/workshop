@@ -1,10 +1,10 @@
 import { db } from "@/utils/db";
 import { NextResponse } from "next/server";
 
-// Handler for POST requests
-
 export async function POST(req) {
   const { name, password, rol } = await req.json();
+
+  console.log('Received data:', { name, password, rol });
 
   try {
     const newUser = await db.query(
@@ -24,7 +24,7 @@ export async function POST(req) {
   }
 }
 
-// Handler for unsupported HTTP methods
+
 export function OPTIONS(req, res) {
   return new Response(null, {
     status: 204,
