@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
 import ModalModel from "@/modals/ModalModel";
@@ -12,6 +12,7 @@ const SelectModel = ({ selectedBrand, name }) => {
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [messageSuccess, setMessageSuccess] = useState("");
+  const [messageError, setMessageError] = useState("");
   const [editModelName, setEditModelName] = useState("");
   const [selectedModelId, setSelectedModelId] = useState(null);
 
@@ -63,13 +64,20 @@ const SelectModel = ({ selectedBrand, name }) => {
         handleCloseModal();
         fetchModels();
       } else {
-        console.error("Failed to create model");
+        const result = await response.json();
+        setMessageError(result.error || "Error creando modelo");
+        setTimeout(() => {
+          setMessageError("");
+        }, 3000);
       }
     } catch (error) {
       console.error("Error creating model", error);
+      setMessageError("Error creando modelo");
+      setTimeout(() => {
+        setMessageError("");
+      }, 3000);
     }
   };
-
   const handleEditModel = async (editedModelName, modelId, brandId) => {
     try {
       const response = await fetch(`/api/modelos`, {
@@ -143,6 +151,7 @@ const SelectModel = ({ selectedBrand, name }) => {
             brands={brands}
             titleModel="Agregar Nuevo Modelo"
             nameButton="Crear Modelo"
+            messageError={messageError}
           />
         )}
 

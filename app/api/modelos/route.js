@@ -15,7 +15,31 @@ export async function GET(request) {
 export async function POST(req) {
   const { name, brand_id } = await req.json();
 
+  if (!name || !brand_id) {
+    return new Response(
+      JSON.stringify({ error: "Nombre y Marca son requeridos" }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
   try {
+    const lowerCaseName = name.toLowerCase();
+
+    const modelCheck = await db.query(
+      "SELECT 1 FROM models WHERE LOWER(name) = $1 AND brand_id = $2",
+      [lowerCaseName, brand_id]
+    );
+
+    if (modelCheck.rowCount > 0) {
+      return new Response(JSON.stringify({ error: "Ya existe este modelo para esta marca" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const newModel = await db.query(
       "INSERT INTO models (name, brand_id) VALUES ($1, $2) RETURNING *",
       [name, brand_id]
@@ -32,6 +56,7 @@ export async function POST(req) {
     });
   }
 }
+
 
 export async function PUT(req) {
   const { id, name, brand_id } = await req.json();

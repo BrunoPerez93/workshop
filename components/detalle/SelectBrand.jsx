@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect, useState } from "react";
 import ModalBrand from "@/modals/ModalBrand";
 
@@ -8,6 +6,7 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [messageSuccess, setMessageSuccess] = useState("");
+  const [messageError, setMessageError] = useState("");
   const [editBrandName, setEditBrandName] = useState("");
 
   useEffect(() => {
@@ -57,19 +56,28 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
         },
         body: JSON.stringify({ name: newBrandName }),
       });
+
+      const result = await response.json();
+
       if (response.ok) {
-        const newBrand = await response.json();
-        setBrands([...brands, newBrand]);
+        setBrands([...brands, result]);
         handleCloseModal();
         setMessageSuccess("Marca Creada Con Exito");
         setTimeout(() => {
           setMessageSuccess("");
         }, 3000);
       } else {
-        console.error("Failed to create brand");
+        setMessageError(result.error || "Error creating brand");
+        setTimeout(() => {
+          setMessageError("");
+        }, 3000);
       }
     } catch (error) {
       console.error("Error creating brand", error);
+      setMessageError("Error creating brand");
+      setTimeout(() => {
+        setMessageError("");
+      }, 3000);
     }
   };
 
@@ -127,46 +135,45 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
               ))}
             </select>
             <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900">
-              {name} *
+              {name}
             </label>
           </div>
-
           <button
+            className="btn-style mr-2"
             type="button"
-            className="mr-2 btn-style"
             onClick={handleAgregarClick}
           >
             Agregar
           </button>
-
-          <button type="button" className="btn-style" onClick={handleEditClick}>
+          <button
+            className="btn-style"
+            type="button"
+            onClick={handleEditClick}
+          >
             Editar
           </button>
         </div>
-
-        {isCreateModalOpen && (
-          <ModalBrand
-            onClose={handleCloseModal}
-            onSubmit={handleCreateBrand}
-            titleBrand="Agregar Nueva Marca"
-            nameButton="Crear Marca"
-          />
-        )}
-
-        {isEditModalOpen && (
-          <ModalBrand
-            onClose={handleCloseModal}
-            onSubmit={handleEditBrand}
-            titleBrand="Editar Marca"
-            nameButton="Editar Marca"
-            initialBrandName={editBrandName}
-          />
+        {messageSuccess && (
+          <p className="mt-2 text-green-500">{messageSuccess}</p>
         )}
       </div>
-      {messageSuccess && (
-        <div className="text-center p-5 rounded-md bg-green-400 text-white font-bold">
-          {messageSuccess}
-        </div>
+      {isCreateModalOpen && (
+        <ModalBrand
+          onClose={handleCloseModal}
+          onSubmit={handleCreateBrand}
+          titleBrand="Crear Marca"
+          submitButtonText="Crear Marca"
+          messageError={messageError}
+        />
+      )}
+      {isEditModalOpen && (
+        <ModalBrand
+          onClose={handleCloseModal}
+          onSubmit={handleEditBrand}
+          titleBrand="Editar Marca"
+          initialBrandName={editBrandName}
+          submitButtonText="Guardar"
+        />
       )}
     </div>
   );

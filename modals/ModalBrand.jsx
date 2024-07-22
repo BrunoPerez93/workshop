@@ -4,8 +4,9 @@ const ModalBrand = ({
   onClose,
   onSubmit,
   titleBrand,
-  nameButton,
+  submitButtonText,
   initialBrandName = "",
+  messageError,
 }) => {
   const [brandName, setBrandName] = useState(initialBrandName);
 
@@ -25,7 +26,7 @@ const ModalBrand = ({
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-75 z-5 ">
       <div className="bg-white rounded-md w-full max-w-md mb-5 border p-5">
-        <div className="flex p-5 justify-between">
+        <div className="flex py-4 justify-between">
           <h3 className="text-2xl font-semibold">{titleBrand}</h3>
           <button
             type="button"
@@ -38,16 +39,22 @@ const ModalBrand = ({
         <div className="relative p-6 flex-auto">
           <input
             type="text"
-            placeholder="Nombre de la marca"
+            className="w-full border border-blue-gray-200 rounded py-2"
             value={brandName}
             onChange={handleInputChange}
-            className="w-full px-3 py-2.5 text-blue-gray-700 border border-blue-gray-200 rounded-md focus:outline-none focus:border-gray-900"
+            placeholder="Nombre de la marca"
           />
+          {messageError && <div className="my-4 p-5">{messageError}</div>}
         </div>
-        <div className="p-4 flex justify-end">
-          <button type="button" className="btn-style" onClick={handleSubmit}>
-            {nameButton}
+        <div className="flex items-center justify-end p-6 border-t border-solid border-blue-gray-200 rounded-b">
+          <button
+            className="btn-style"
+            type="button"
+            onClick={handleSubmit}
+          >
+            {submitButtonText}
           </button>
+        
         </div>
       </div>
     </div>

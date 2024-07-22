@@ -9,6 +9,7 @@ const ModalModel = ({
   initialModelName = "",
   initialBrandId = "",
   isEdit = false,
+  messageError,
 }) => {
   const [modelName, setModelName] = useState(initialModelName);
   const [selectedBrandId, setSelectedBrandId] = useState(initialBrandId);
@@ -17,7 +18,6 @@ const ModalModel = ({
     setModelName(initialModelName);
     setSelectedBrandId(initialBrandId);
   }, [initialModelName, initialBrandId]);
-
 
   const handleInputChange = (e) => {
     setModelName(e.target.value);
@@ -54,6 +54,7 @@ const ModalModel = ({
             onChange={handleInputChange}
             className="w-full py-2.5 text-blue-gray-700 border border-blue-gray-200 rounded-md focus:outline-none focus:border-gray-900"
           />
+          {messageError && <div className="my-4 p-5">{messageError}</div>}
           {!isEdit && (
             <select
               value={selectedBrandId}
@@ -76,7 +77,7 @@ const ModalModel = ({
             type="button"
             className="btn-style"
             onClick={handleSubmit}
-            disabled={!modelName || (!isEdit && !selectedBrandId)} 
+            disabled={!modelName || (!isEdit && !selectedBrandId)}
           >
             {nameButton}
           </button>

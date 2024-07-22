@@ -15,7 +15,27 @@ export async function GET(request) {
 export async function POST(req) {
   const { name } = await req.json();
 
+  if (!name) {
+    return new Response(
+      JSON.stringify({ error: "Name is required" }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
   try {
+    const lowerCaseName = name.toLowerCase();
+    const nameCheck = await db.query("SELECT 1 FROM brands WHERE LOWER(name) = $1", [lowerCaseName]);
+    if (nameCheck.rowCount > 0) {
+      return new Response(JSON.stringify({ error: "Esta marca ya existe" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+
     const newBrand = await db.query(
       "INSERT INTO brands (name) VALUES ($1) RETURNING *",
       [name]
