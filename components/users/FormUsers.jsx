@@ -21,13 +21,20 @@ const FormUsers = ({ triggerRefresh }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formattedData = {
+        name: formData.name,
+        password: formData.password,
+        rol: formData.rol.toLowerCase(),
+      };
+  
       const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formattedData),
       });
+  
       if (!response.ok) {
         throw new Error("Something went wrong");
       }

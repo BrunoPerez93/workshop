@@ -1,5 +1,6 @@
 export const roles = {
-    Admin: "Admin",
-    Management: "Management",
-    Mechanic: "Mechanic",
-}
+    Admin: "admin",
+    Management: "management",
+    Mechanic: "mechanic",
+  };
+  
