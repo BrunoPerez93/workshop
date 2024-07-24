@@ -1,11 +1,17 @@
-import { db } from "@/utils/db";
+import Client from "@/models/Client";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
+const connectToDatabase = async () => {
+  if (mongoose.connection.readyState >= 1) return;
+  await mongoose.connect(process.env.MONGODB_URI);
+};
+
+export async function GET() {
   try {
-    const query = "SELECT * FROM clients";
-    const clients = await db.query(query);
-    return NextResponse.json(clients.rows);
+    await connectToDatabase();
+    const clients = await Client.find({});
+    return NextResponse.json(clients);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Database error" }, { status: 500 });
@@ -15,9 +21,9 @@ export async function GET(request) {
 export async function POST(req) {
   const { name, lastname, ci, cellphone } = await req.json();
 
-  if (!name || !cellphone) {
+  if (!name || !cellphone || !ci) {
     return new Response(
-      JSON.stringify({ error: "Name and cellphone are required" }),
+      JSON.stringify({ error: "Name, CI, and cellphone are required" }),
       {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -26,19 +32,20 @@ export async function POST(req) {
   }
 
   try {
-    const ciCheck = await db.query("SELECT 1 FROM clients WHERE ci = $1", [ci]);
-    if (ciCheck.rowCount > 0) {
+    await connectToDatabase();
+
+    const existingClient = await Client.findOne({ ci });
+    if (existingClient) {
       return new Response(JSON.stringify({ error: "CI already exists" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    const newClient = await db.query(
-      "INSERT INTO clients (name, lastname, ci, cellphone) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, lastname, ci, cellphone]
-    );
-    return new Response(JSON.stringify(newClient.rows[0]), {
+    const newClient = new Client({ name, lastname, ci, cellphone });
+    await newClient.save();
+
+    return new Response(JSON.stringify(newClient), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -55,17 +62,22 @@ export async function PUT(req) {
   const { id, name, lastname, ci, cellphone } = await req.json();
 
   try {
-    const updatedClient = await db.query(
-      "UPDATE clients SET name = $1, lastname = $2, ci = $3, cellphone = $4 WHERE id = $5 RETURNING *",
-      [name, lastname, ci, cellphone, id]
+    await connectToDatabase();
+
+    const updatedClient = await Client.findByIdAndUpdate(
+      id,
+      { name, lastname, ci, cellphone },
+      { new: true }
     );
-    if (updatedClient.rowCount === 0) {
+
+    if (!updatedClient) {
       return new Response(JSON.stringify({ error: "Client not found" }), {
         status: 404,
         headers: { "Content-Type": "application/json" },
       });
     }
-    return new Response(JSON.stringify(updatedClient.rows[0]), {
+
+    return new Response(JSON.stringify(updatedClient), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

@@ -1,81 +1,57 @@
 import { db } from "@/utils/db";
+import Brand from "@/models/Brand"; // Ensure this path is correct
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
+export async function GET() {
   try {
-    const query = "SELECT * FROM brands";
-    const brands = await db.query(query);
-    return NextResponse.json(brands.rows);
+    await db();
+    const brands = await Brand.find({});
+    return NextResponse.json(brands);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
+    return NextResponse.json({ error: "Error retrieving brands" }, { status: 500 });
   }
 }
 
 export async function POST(req) {
-  const { name } = await req.json();
-
-  if (!name) {
-    return new Response(
-      JSON.stringify({ error: "Name is required" }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
-
   try {
-    const lowerCaseName = name.toLowerCase();
-    const nameCheck = await db.query("SELECT 1 FROM brands WHERE LOWER(name) = $1", [lowerCaseName]);
-    if (nameCheck.rowCount > 0) {
-      return new Response(JSON.stringify({ error: "Esta marca ya existe" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+    const { name } = await req.json();
+
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
+    await db();
 
-    const newBrand = await db.query(
-      "INSERT INTO brands (name) VALUES ($1) RETURNING *",
-      [name]
-    );
-    return new Response(JSON.stringify(newBrand.rows[0]), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    const lowerCaseName = name.toLowerCase();
+    const existingBrand = await Brand.findOne({ name: lowerCaseName });
+    if (existingBrand) {
+      return NextResponse.json({ error: "Brand already exists" }, { status: 400 });
+    }
+
+    const newBrand = new Brand({ name });
+    const savedBrand = await newBrand.save();
+    return NextResponse.json(savedBrand);
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: "Database error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ error: "Error creating brand" }, { status: 500 });
   }
 }
 
 export async function PUT(req) {
-  const { id, name } = await req.json();
-
   try {
-    const updatedBrand = await db.query(
-      "UPDATE brands SET name = $1 WHERE id = $2 RETURNING *",
-      [name, id]
-    );
-    if (updatedBrand.rowCount === 0) {
-      return new Response(JSON.stringify({ error: "Brand not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+    const { id, name } = await req.json();
+
+    await db();
+
+    const updatedBrand = await Brand.findByIdAndUpdate(id, { name }, { new: true });
+    if (!updatedBrand) {
+      return NextResponse.json({ error: "Brand not found" }, { status: 404 });
     }
-    return new Response(JSON.stringify(updatedBrand.rows[0]), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+
+    return NextResponse.json(updatedBrand);
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: "Database error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ error: "Error updating brand" }, { status: 500 });
   }
 }

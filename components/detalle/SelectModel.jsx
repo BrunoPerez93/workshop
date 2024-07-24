@@ -16,8 +16,8 @@ const SelectModel = ({ selectedBrand, name }) => {
   const [selectedModelId, setSelectedModelId] = useState(null);
 
   useEffect(() => {
-    if (models.length > 0) {
-      setSelectedModelId(models[0].id);
+    if (Array.isArray(models) && models.length > 0) {
+      setSelectedModelId(models[0]._id);
     }
   }, [models]);
 
@@ -29,9 +29,7 @@ const SelectModel = ({ selectedBrand, name }) => {
       return;
     }
 
-    const selectedModel = models.find(
-      (model) => model.id === parseInt(selectedModelId)
-    );
+    const selectedModel = models.find((model) => model._id === selectedModelId);
     if (selectedModel) {
       setEditModelName(selectedModel.name);
       setEditModalOpen(true);
@@ -56,16 +54,15 @@ const SelectModel = ({ selectedBrand, name }) => {
       const response = await fetch("/api/modelos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newModelName, brand_id: brandId }),
+        body: JSON.stringify({ name: newModelName, brand_id: brandId }), 
       });
 
+      const result = await response.json();
       if (response.ok) {
-        await response.json();
         showMessage("Modelo Creado Con Éxito", "success");
         handleCloseModal();
         fetchModels();
       } else {
-        const result = await response.json();
         showMessage(result.error || "Error creando modelo", "error");
       }
     } catch (error) {
@@ -82,17 +79,17 @@ const SelectModel = ({ selectedBrand, name }) => {
         body: JSON.stringify({
           id: modelId,
           name: editedModelName,
-          brand_id: brandId,
+          brand_id: brandId, 
         }),
       });
 
+      const result = await response.json();
       if (response.ok) {
-        await response.json();
         showMessage("Modelo Editado Con Éxito", "success");
         handleCloseModal();
         fetchModels();
       } else {
-        console.error("Failed to edit model");
+        showMessage(result.error || "Error editando modelo", "error");
       }
     } catch (error) {
       console.error("Error editing model", error);
@@ -113,8 +110,8 @@ const SelectModel = ({ selectedBrand, name }) => {
               <option value="" disabled>
                 Seleccione un modelo...
               </option>
-              {models.map((model) => (
-                <option key={model.id} value={model.id}>
+              {Array.isArray(models) && models.map((model) => (
+                <option key={model._id} value={model._id}>
                   {model.name}
                 </option>
               ))}
@@ -164,7 +161,14 @@ const SelectModel = ({ selectedBrand, name }) => {
         )}
       </div>
       {messages.success && (
-        <p className="mt-2 text-green-500">{messages.success}</p>
+        <div className="message-success text-green-500">
+          {messages.success}
+        </div>
+      )}
+      {messages.error && (
+        <div className="message-error text-red-500">
+          {messages.error}
+        </div>
       )}
     </div>
   );

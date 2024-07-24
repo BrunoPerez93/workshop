@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import ModalClient from "@/modals/ModalClient";
 
@@ -5,10 +7,7 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
   const [clients, setClients] = useState([]);
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [messages, setMessages] = useState({
-    success: "",
-    error: "",
-  });
+  const [messages, setMessages] = useState({ success: "", error: "" });
   const [editClient, setEditClient] = useState(null);
 
   useEffect(() => {
@@ -18,7 +17,7 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
         const data = await response.json();
         setClients(data);
       } catch (error) {
-        console.error("Error fetching clients", error);
+        console.error("Error fetching clients:", error);
       }
     };
     fetchClients();
@@ -34,15 +33,17 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
       if (response.ok) {
         const newClientData = await response.json();
         setClients((prev) => [...prev, newClientData]);
-        setMessage("Cliente Creado Con Exito");
+        setMessages({ success: "Cliente creado con éxito", error: "" });
       } else {
-        console.error("Failed to create client");
+        const errorData = await response.json();
+        setMessages({ success: "", error: errorData.error });
       }
     } catch (error) {
-      console.error("Error creating client", error);
+      console.error("Error creating client:", error);
+      setMessages({ success: "", error: "Error al crear cliente" });
     } finally {
       handleCloseModals();
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => setMessages({ success: "", error: "" }), 3000);
     }
   };
 
@@ -51,24 +52,32 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
       const response = await fetch(`/api/clients`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedClient),
+        body: JSON.stringify({
+          id: updatedClient._id,
+          name: updatedClient.name,
+          lastname: updatedClient.lastname,
+          ci: updatedClient.ci,
+          cellphone: updatedClient.cellphone,
+        }),
       });
       if (response.ok) {
         const updatedClientData = await response.json();
         setClients((prev) =>
           prev.map((client) =>
-            client.id === updatedClientData.id ? updatedClientData : client
+            client._id === updatedClientData._id ? updatedClientData : client
           )
         );
-        setMessage("Cliente Editado Con Exito");
+        setMessages({ success: "Cliente editado con éxito", error: "" });
       } else {
-        console.error("Failed to edit client");
+        const errorData = await response.json();
+        setMessages({ success: "", error: errorData.error });
       }
     } catch (error) {
-      console.error("Error editing client", error);
+      console.error("Error editing client:", error);
+      setMessages({ success: "", error: "Error al editar cliente" });
     } finally {
       handleCloseModals();
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => setMessages({ success: "", error: "" }), 3000);
     }
   };
 
@@ -84,7 +93,7 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
     }
 
     const selectedClientObject = clients.find(
-      (client) => client.id.toString() === selectedClient.toString()
+      (client) => client._id.toString() === selectedClient
     );
 
     if (selectedClientObject) {
@@ -106,14 +115,14 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
         <div className="flex justify-center items-center w-full">
           <div className="relative w-full min-w-[200px] h-10 mr-5">
             <select
-              value={selectedClient}
+              value={selectedClient || ""}
               onChange={(e) => setSelectedClient(e.target.value)}
               name={name}
               className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
             >
               <option value="">Seleccionar Cliente</option>
               {clients.map((client) => (
-                <option key={client.id} value={client.id}>
+                <option key={client._id} value={client._id}>
                   {client.name} {client.lastname}
                 </option>
               ))}

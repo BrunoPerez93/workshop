@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 const useFetchModels = (selectedBrand) => {
@@ -6,12 +5,9 @@ const useFetchModels = (selectedBrand) => {
 
   const fetchModels = async () => {
     try {
-      const response = await fetch(`/api/modelos`);
+      const response = await fetch(`/api/modelos?brand_id=${selectedBrand}`);
       const data = await response.json();
-      const filteredModels = selectedBrand
-        ? data.filter((model) => model.brand_id === parseInt(selectedBrand))
-        : data;
-      setModels(filteredModels);
+      setModels(data);
     } catch (error) {
       console.error("Error fetching models", error);
     }

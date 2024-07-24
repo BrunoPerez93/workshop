@@ -28,7 +28,7 @@ const ModalModel = ({
   };
 
   const handleSubmit = () => {
-    onSubmit(modelName, selectedBrandId);
+    onSubmit(modelName, selectedBrandId); // Use `selectedBrandId`
     setModelName("");
     setSelectedBrandId("");
   };
@@ -65,7 +65,7 @@ const ModalModel = ({
                 Seleccione una marca...
               </option>
               {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
+                <option key={brand._id} value={brand._id}>
                   {brand.name}
                 </option>
               ))}

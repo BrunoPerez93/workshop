@@ -1,85 +1,65 @@
 import { db } from "@/utils/db";
+import Model from "@/models/Model";
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
+export async function GET(req) {
   try {
-    const query = "SELECT * FROM models";
-    const models = await db.query(query);
-    return NextResponse.json(models.rows);
+    await db();
+    const url = new URL(req.url);
+    const brandId = url.searchParams.get('brand_id');
+    
+    const filter = brandId ? { brand_id: brandId } : {};
+    const models = await Model.find(filter).populate("brand_id");
+    return NextResponse.json(models);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
+    console.error("Error retrieving models:", error);
+    return NextResponse.json({ error: "Error retrieving models" }, { status: 500 });
   }
 }
 
 export async function POST(req) {
-  const { name, brand_id } = await req.json();
-
-  if (!name || !brand_id) {
-    return new Response(
-      JSON.stringify({ error: "Nombre y Marca son requeridos" }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
-
   try {
-    const lowerCaseName = name.toLowerCase();
+    const { name, brand_id } = await req.json();
 
-    const modelCheck = await db.query(
-      "SELECT 1 FROM models WHERE LOWER(name) = $1 AND brand_id = $2",
-      [lowerCaseName, brand_id]
-    );
-
-    if (modelCheck.rowCount > 0) {
-      return new Response(JSON.stringify({ error: "Ya existe este modelo para esta marca" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+    if (!name || !brand_id) {
+      return NextResponse.json({ error: "Name and Brand are required" }, { status: 400 });
     }
 
-    const newModel = await db.query(
-      "INSERT INTO models (name, brand_id) VALUES ($1, $2) RETURNING *",
-      [name, brand_id]
-    );
-    return new Response(JSON.stringify(newModel.rows[0]), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    await db();
+
+    const existingModel = await Model.findOne({ name, brand_id });
+    if (existingModel) {
+      return NextResponse.json({ error: "Model already exists for this brand" }, { status: 400 });
+    }
+
+    const newModel = new Model({ name, brand_id });
+    const savedModel = await newModel.save();
+    return NextResponse.json(savedModel);
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: "Database error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("Error creating model:", error);
+    return NextResponse.json({ error: "Error creating model" }, { status: 500 });
   }
 }
 
-
 export async function PUT(req) {
-  const { id, name, brand_id } = await req.json();
-
   try {
-    const updatedModel = await db.query(
-      "UPDATE models SET name = $1, brand_id = $2 WHERE id = $3 RETURNING *",
-      [name, brand_id, id]
-    );
-    if (updatedModel.rowCount === 0) {
-      return new Response(JSON.stringify({ error: "Model not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+    const { id, name, brand_id } = await req.json();
+
+    await db();
+
+    const updatedModel = await Model.findByIdAndUpdate(
+      id,
+      { name, brand_id },
+      { new: true } 
+    ).populate('brand_id'); 
+
+    if (!updatedModel) {
+      return NextResponse.json({ error: "Model not found" }, { status: 404 });
     }
-    return new Response(JSON.stringify(updatedModel.rows[0]), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+
+    return NextResponse.json(updatedModel);
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Database error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("Error updating model:", error);
+    return NextResponse.json({ error: "Error updating model" }, { status: 500 });
   }
 }
