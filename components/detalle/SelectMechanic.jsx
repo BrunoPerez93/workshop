@@ -11,7 +11,6 @@ const SelectMechanic = ({ name }) => {
       try {
         const response = await fetch("/api/mechanic");
         const data = await response.json();
-        console.log("Fetched mechanics:", data); // Debugging line
         if (Array.isArray(data)) {
           setMechanics(data);
         } else {
