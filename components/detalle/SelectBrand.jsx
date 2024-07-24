@@ -1,4 +1,5 @@
-// components/SelectBrand.js
+'use client';
+
 import { useEffect, useState } from "react";
 import ModalBrand from "@/modals/ModalBrand";
 
