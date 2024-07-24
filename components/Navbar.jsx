@@ -55,7 +55,7 @@ const Navbar = () => {
 
                 {toggleDropdown && (
                     <div className="absolute top-16 right-0 bg-white shadow-lg rounded-lg p-5 flex flex-col items-start">
-                        <Link className='hover:text-blue-950 py-2' href="/">Detalle Trabajo</Link>
+                        <Link className='hover:text-blue-950 py-2' href="/detalle">Detalle Trabajo</Link>
                         <Link className='hover:text-blue-950 py-2' href="/search">Busqueda Trabajo</Link>
                         <Link className='hover:text-blue-950 py-2' href="/users">Administrar Usuario</Link>
                         <Link className='hover:text-blue-950 py-2' href="/mechanic">Administrar Tecnico</Link>
