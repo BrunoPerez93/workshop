@@ -13,7 +13,7 @@ const triggerRefresh = () => {
 
   return (
     <section className="flex flex-col h-screen justify-start items-center p-5 bg-white">
-      <h1 className="text-5xl p-5 font-bold">Administrar Usuariossss</h1>
+      <h1 className="text-5xl p-5 font-bold">Administrar Usuarios</h1>
       <FormUsers triggerRefresh={triggerRefresh}/>
 
       <ListUsers refresh={refresh}/>

@@ -4,8 +4,6 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   const { name, password, rol } = await req.json();
 
-  console.log('Received data:', { name, password, rol });
-
   try {
     const newUser = await db.query(
       "INSERT INTO users (username, password, rol) VALUES ($1, $2, $3) RETURNING *",

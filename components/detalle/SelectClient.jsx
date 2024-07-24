@@ -5,7 +5,10 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
   const [clients, setClients] = useState([]);
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState({
+    success: "",
+    error: "",
+  });
   const [editClient, setEditClient] = useState(null);
 
   useEffect(() => {
@@ -134,10 +137,11 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
             Editar
           </button>
         </div>
-        {message && (
-          <p className="mt-2 text-green-500">
-            {message}
-          </p>
+        {messages.success && (
+          <p className="mt-2 text-green-500">{messages.success}</p>
+        )}
+        {messages.error && (
+          <p className="mt-2 text-red-500">{messages.error}</p>
         )}
       </div>
       {isCreateModalOpen && (
