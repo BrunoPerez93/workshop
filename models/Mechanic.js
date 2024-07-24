@@ -6,6 +6,6 @@ const mechanicSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-const Mechanic = mongoose.models.Mechanic || mongoose.model("Mechanic", userSchema);
+const Mechanic = mongoose.models.Mechanic || mongoose.model("Mechanic", mechanicSchema);
 
 export default Mechanic;
