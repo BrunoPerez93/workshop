@@ -5,7 +5,7 @@ import { roles } from "@/utils/common";
 
 const FormUsers = ({ triggerRefresh }) => {
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     password: "",
     rol: "",
   });
@@ -22,11 +22,11 @@ const FormUsers = ({ triggerRefresh }) => {
     e.preventDefault();
     try {
       const formattedData = {
-        name: formData.name,
+        username: formData.username,
         password: formData.password,
         rol: formData.rol,
       };
-  
+
       const response = await fetch("/api/users", {
         method: "POST",
         headers: {
@@ -34,13 +34,13 @@ const FormUsers = ({ triggerRefresh }) => {
         },
         body: JSON.stringify(formattedData),
       });
-  
+
       if (!response.ok) {
         throw new Error("Something went wrong");
       }
       const result = await response.json();
       triggerRefresh();
-      setFormData({ name: "", password: "", rol: "" });
+      setFormData({ username: "", password: "", rol: "" });
       console.log(result);
     } catch (error) {
       console.error(error);
@@ -55,9 +55,9 @@ const FormUsers = ({ triggerRefresh }) => {
             className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
             placeholder=" "
             type="text"
-            id="name"
-            name="name"
-            value={formData.name}
+            id="username"
+            name="username"
+            value={formData.username}
             onChange={handleChange}
             required
           />
@@ -74,7 +74,7 @@ const FormUsers = ({ triggerRefresh }) => {
             placeholder=" "
             type="password"
             id="password"
-            name="password"
+            name="password" // Correctly set 'name' attribute
             value={formData.password}
             onChange={handleChange}
             required
@@ -90,7 +90,7 @@ const FormUsers = ({ triggerRefresh }) => {
           <select
             className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
             id="rol"
-            name="rol"
+            name="rol" // Correctly set 'name' attribute
             value={formData.rol}
             onChange={handleChange}
             required
@@ -110,10 +110,7 @@ const FormUsers = ({ triggerRefresh }) => {
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="btn-style"
-      >
+      <button type="submit" className="btn-style">
         Agregar Usuario
       </button>
     </form>

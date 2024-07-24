@@ -1,45 +1,42 @@
 import { db } from "@/utils/db";
+import User from "@/models/User";
 import { NextResponse } from "next/server";
 
-export async function POST(req) {
-  const { name, password, rol } = await req.json();
+await db();
 
+export async function POST(req) {
   try {
-    const newUser = await db.query(
-      "INSERT INTO users (username, password, rol) VALUES ($1, $2, $3) RETURNING *",
-      [name, password, rol]
-    );
-    return new Response(JSON.stringify(newUser.rows[0]), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+    const { username, password, rol } = await req.json();
+    const newUser = new User({
+      username,
+      password,
+      rol,
     });
+    
+    const savedUser = await newUser.save();
+    return NextResponse.json(savedUser);
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: "Database error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ error: "Error creating user" }, { status: 500 });
   }
 }
 
+export async function GET() {
+  try {
+    const users = await User.find({});
+    return NextResponse.json(users);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Error retrieving users" }, { status: 500 });
+  }
+}
 
-export function OPTIONS(req, res) {
+export function OPTIONS() {
   return new Response(null, {
     status: 204,
     headers: {
-      Allow: "OPTIONS, POST",
+      Allow: "OPTIONS, POST, GET",
       "Content-Type": "application/json",
     },
   });
-}
-
-export async function GET(request) {
-  try {
-    const query = "SELECT * FROM users";
-    const users = await db.query(query);
-    return NextResponse.json(users.rows);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
-  }
 }
