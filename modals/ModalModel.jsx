@@ -28,7 +28,7 @@ const ModalModel = ({
   };
 
   const handleSubmit = () => {
-    onSubmit(modelName, selectedBrandId); // Use `selectedBrandId`
+    onSubmit(modelName, selectedBrandId);
     setModelName("");
     setSelectedBrandId("");
   };
