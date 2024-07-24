@@ -48,7 +48,7 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
 
       const result = await response.json();
       setBrands((prev) => [...prev, result]);
-      setMessages({ success: "Brand created successfully", error: "" });
+      setMessages({ success: "Marca Creada Correctamente", error: "" });
     } catch (error) {
       setMessages({ success: "", error: error.message });
     } finally {
@@ -59,7 +59,7 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
 
   const handleEditBrand = async (newBrandName) => {
     if (!selectedBrand) {
-      alert("Please select a brand to edit.");
+      alert("Por favor selecione una marca para editar.");
       return;
     }
 
@@ -76,7 +76,7 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
       setBrands((prev) =>
         prev.map((brand) => (brand._id === updatedBrand._id ? updatedBrand : brand))
       );
-      setMessages({ success: "Brand updated successfully", error: "" });
+      setMessages({ success: "Marca Editada Correctamente", error: "" });
     } catch (error) {
       setMessages({ success: "", error: error.message });
     } finally {
@@ -96,10 +96,10 @@ const SelectBrand = ({ selectedBrand, setSelectedBrand, name }) => {
         setEditBrandName(selectedBrandObject.name);
         openModal('edit');
       } else {
-        alert("The selected brand is not valid.");
+        alert("La marca selecionada no es valida.");
       }
     } else {
-      alert("Please select a brand to edit.");
+      alert("Por favor selecione una marca para editar.");
     }
   };
 
