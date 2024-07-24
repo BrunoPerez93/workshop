@@ -22,7 +22,7 @@ const SelectMechanic = memo(({ name }) => {
   }, []);
 
   return (
-    <div className="relative w-full h-10 mr-5">
+    <div className="relative w-full  h-10 mr-5">
       <select
         value={selectedMechanic}
         onChange={(e) => setSelectedMechanic(e.target.value)}

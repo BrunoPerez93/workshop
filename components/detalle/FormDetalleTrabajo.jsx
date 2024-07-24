@@ -27,9 +27,9 @@ const FormDetalleTrabajo = () => {
   };
 
   return (
-    <form>
-      <div className="flex mb-5">
-        <div className="mr-2">
+    <form className="w-full flex flex-col justify-center items-center">
+      <div className="flex mb-5 flex-wrap w-full justify-center items-center">
+        <div className="mr-2 ">
           <SelectBrand
             name="Marca"
             selectedBrand={selectedBrand}
@@ -40,12 +40,12 @@ const FormDetalleTrabajo = () => {
           <SelectModel name="Modelo" selectedBrand={selectedBrand} />
         </div>
       </div>
-      <div className="flex mb-5">
+      <div className="flex mb-5 flex-wrap w-full justify-center items-center">
         <InputForm name="Matricula" asterisco="*" />
         <InputForm name="KM" />
       </div>
-      <div className="flex mb-5">
-        <div className="mr-2">
+      <div className="flex mb-5 flex-wrap w-full justify-center items-center">
+        <div className="mr-2 mb-5">
           <SelectClient
             selectedClient={selectedClient}
             setSelectedClient={setSelectedClient}

@@ -101,7 +101,7 @@ const SelectModel = ({ selectedBrand, name }) => {
     <div className="flex flex-col">
       <div className="flex flex-col justify-center items-center">
         <div className="flex justify-center items-center w-full">
-          <div className="relative w-full min-w-[200px] h-10 mr-5">
+          <div className="relative w-full  h-10 mr-5">
             <select
               value={selectedModelId || ""}
               onChange={(e) => setSelectedModelId(e.target.value)}
