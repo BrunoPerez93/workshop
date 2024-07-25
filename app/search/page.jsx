@@ -36,7 +36,7 @@ const SearchPage = () => {
   return (
       <section className="relative overflow-x-auto w-full flex flex-col justify-center items-center h-screen">
         <div className="my-5">
-          <h1 className="text-2xl md:text-5xl font-bold">Busqueda te Trabajos</h1>
+          <h1 className="text-2xl md:text-5xl font-bold">Busqueda de Trabajos</h1>
         </div>
         <table className="w-full text-sm text-gray-500 dark:text-gray-400 mt-5 text-center">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
