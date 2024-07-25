@@ -194,14 +194,22 @@ const FormDetalleTrabajo = () => {
           type="number"
           value={manoDeObra || ""}
           onChange={handleManoDeObraChange}
+          label="Mano de obra"
         />
         <InputForm
           name="Repuesto"
           type="number"
           value={repuesto || ""}
           onChange={handleRepuestoChange}
+          label="Repuesto"
         />
-        <InputForm name="Total" type="number" value={total || ""} readOnly />
+        <InputForm
+          name="Total"
+          type="number"
+          value={total || ""}
+          readOnly
+          label="Total"
+        />
 
         <button type="submit" className="btn-style">
           Crear Trabajo
