@@ -6,20 +6,26 @@ import InputForm from "../InputForm";
 import SelectMechanic from "./SelectMechanic";
 
 const FormDetalleTrabajo = () => {
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedClient, setSelectedClient] = useState("");
-  const [selectedMechanic, setSelectedMechanic] = useState(""); // Add this line
-  const [manoDeObra, setManoDeObra] = useState(0);
-  const [repuesto, setRepuesto] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     matricula: "",
     km: "",
     year: "",
     fallo: "",
     repuestos: "",
     observaciones: "",
+  };
+
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedClient, setSelectedClient] = useState("");
+  const [selectedMechanic, setSelectedMechanic] = useState("");
+  const [manoDeObra, setManoDeObra] = useState(0);
+  const [repuesto, setRepuesto] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [formData, setFormData] = useState(initialFormData);
+  const [messages, setMessages] = useState({
+    success: "",
+    error: "",
   });
 
   const handleInputChange = (e) => {
@@ -44,25 +50,23 @@ const FormDetalleTrabajo = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!selectedModel || !selectedMechanic) {
       console.error("Model and Mechanic are required");
       return;
     }
-  
+
     const dataToSend = {
       ...formData,
       brand: selectedBrand,
       model: selectedModel,
       client: selectedClient,
-      tecnico: selectedMechanic, // Ensure selectedMechanic is included
+      tecnico: selectedMechanic,
       manoDeObra,
       repuesto,
       total,
     };
-  
-    console.log("Submitting data:", dataToSend);
-  
+
     try {
       const response = await fetch("/api/works", {
         method: "POST",
@@ -71,114 +75,139 @@ const FormDetalleTrabajo = () => {
         },
         body: JSON.stringify(dataToSend),
       });
-  
+
       if (!response.ok) {
         const errorResponse = await response.json();
         console.error("Failed to create work:", errorResponse);
         throw new Error(errorResponse.error || "Failed to create work");
       }
-  
+
       const result = await response.json();
-      console.log("Work created successfully:", result);
+      setFormData(initialFormData);
+      setSelectedBrand("");
+      setSelectedModel("");
+      setSelectedClient("");
+      setSelectedMechanic("");
+      setManoDeObra(0);
+      setRepuesto(0);
+      setTotal(0);
+
+      setTimeout(() => {
+        setMessages({ success: "", error: "" });
+      }, 3000);
+      setMessages({ success: "Trabajo Ingresado Correctamente", error: "" });
     } catch (error) {
+      setTimeout(() => {
+        setMessages({ success: "", error: "" });
+      }, 3000);
+      setMessages({ success: "", error: error.message });
       console.error("Error creating work:", error);
     }
   };
 
   return (
-    <form className="w-full flex flex-col justify-center items-center" onSubmit={handleSubmit}>
-      <div className="flex mb-5 flex-wrap w-full justify-center items-center">
-        <div className="mr-2 w-full ">
-          <SelectBrand
-            name="Marca"
-            selectedBrand={selectedBrand}
-            setSelectedBrand={setSelectedBrand}
+    <>
+      {messages.success && (
+        <p className="mt-2 text-green-500">{messages.success}</p>
+      )}
+      {messages.error && <p className="mt-2 text-red-500">{messages.error}</p>}
+      <form
+        className="w-full flex flex-col justify-center items-center"
+        onSubmit={handleSubmit}
+      >
+        <div className="flex mb-5 flex-wrap w-full justify-center items-center">
+          <div className="mr-2 w-full ">
+            <SelectBrand
+              name="Marca"
+              selectedBrand={selectedBrand}
+              setSelectedBrand={setSelectedBrand}
+            />
+          </div>
+          <div className="mr-2 w-full">
+            <SelectModel
+              name="Modelo"
+              selectedBrand={selectedBrand}
+              selectedModel={selectedModel}
+              setSelectedModel={setSelectedModel}
+            />
+          </div>
+        </div>
+        <div className="flex mb-5 flex-wrap w-full justify-center items-center">
+          <InputForm
+            name="matricula"
+            asterisco="*"
+            label="Matricula"
+            value={formData.matricula}
+            onChange={handleInputChange}
+          />
+          <InputForm
+            name="km"
+            label="KM"
+            value={formData.km}
+            onChange={handleInputChange}
           />
         </div>
-        <div className="mr-2 w-full">
-          <SelectModel
-            name="Modelo"
-            selectedBrand={selectedBrand}
-            selectedModel={selectedModel}
-            setSelectedModel={setSelectedModel}
+        <div className="flex mb-5 flex-wrap w-full justify-center items-center">
+          <div className="mr-2 mb-5 w-full">
+            <SelectClient
+              selectedClient={selectedClient}
+              setSelectedClient={setSelectedClient}
+              name="Cliente"
+            />
+          </div>
+          <InputForm
+            name="year"
+            label="Año"
+            value={formData.year}
+            onChange={handleInputChange}
           />
         </div>
-      </div>
-      <div className="flex mb-5 flex-wrap w-full justify-center items-center">
+
         <InputForm
-          name="matricula"
+          name="fallo"
           asterisco="*"
-          label="Matricula"
-          value={formData.matricula}
+          label="Fallo segun reclamacion del cliente"
+          value={formData.fallo}
           onChange={handleInputChange}
         />
         <InputForm
-          name="km"
-          label="KM"
-          value={formData.km}
+          name="repuestos"
+          label="Repuestos: nuevo, alternativo, original o suministrado por el cliente"
+          value={formData.repuestos}
           onChange={handleInputChange}
         />
-      </div>
-      <div className="flex mb-5 flex-wrap w-full justify-center items-center">
-        <div className="mr-2 mb-5 w-full">
-          <SelectClient
-            selectedClient={selectedClient}
-            setSelectedClient={setSelectedClient}
-            name="Cliente"
-          />
-        </div>
         <InputForm
-          name="year"
-          label="Año"
-          value={formData.year}
+          name="observaciones"
+          label="Observaciones"
+          value={formData.observaciones}
           onChange={handleInputChange}
         />
-      </div>
+        <SelectMechanic
+          name="Tecnico"
+          selectedMechanic={selectedMechanic}
+          setSelectedMechanic={setSelectedMechanic}
+        />
 
-      <InputForm
-        name="fallo"
-        asterisco="*"
-        label="Fallo segun reclamacion del cliente"
-        value={formData.fallo}
-        onChange={handleInputChange}
-      />
-      <InputForm
-        name="repuestos"
-        label="Repuestos: nuevo, alternativo, original o suministrado por el cliente"
-        value={formData.repuestos}
-        onChange={handleInputChange}
-      />
-      <InputForm
-        name="observaciones"
-        label="Observaciones"
-        value={formData.observaciones}
-        onChange={handleInputChange}
-      />
-      <SelectMechanic 
-        name="Tecnico"
-        selectedMechanic={selectedMechanic} // Pass selectedMechanic
-        setSelectedMechanic={setSelectedMechanic} // Pass setSelectedMechanic
-      />
+        <h2 className="my-3 font-bold text-2xl">Precios</h2>
+        <InputForm
+          name="Mano de obra"
+          type="number"
+          value={manoDeObra || ""}
+          onChange={handleManoDeObraChange}
+        />
+        <InputForm
+          name="Repuesto"
+          type="number"
+          value={repuesto || ""}
+          onChange={handleRepuestoChange}
+        />
+        <InputForm name="Total" type="number" value={total || ""} readOnly />
 
-      <h2 className="my-3 font-bold text-2xl">Precios</h2>
-      <InputForm
-        name="Mano de obra"
-        type="number"
-        value={manoDeObra || ""}
-        onChange={handleManoDeObraChange}
-      />
-      <InputForm
-        name="Repuesto"
-        type="number"
-        value={repuesto || ""}
-        onChange={handleRepuestoChange}
-      />
-      <InputForm name="Total" type="number" value={total || ""} readOnly />
-
-      <button type="submit" className="btn-style">
-        Crear Trabajo
-      </button>
-    </form>
+        <button type="submit" className="btn-style">
+          Crear Trabajo
+        </button>
+      </form>
+    </>
   );
 };
 
