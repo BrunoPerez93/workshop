@@ -37,7 +37,7 @@ const ModalModel = ({
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-75 z-5">
-      <div className="bg-white rounded-md max-w-md mb-5 border p-5  w-full">
+      <div className="back_modal rounded-md max-w-md mb-5 border p-5  w-full">
         <div className="flex justify-between">
           <h3 className="text-2xl font-semibold">{titleModel}</h3>
           <button

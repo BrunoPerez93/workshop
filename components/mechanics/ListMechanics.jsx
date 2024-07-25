@@ -34,8 +34,8 @@ const ListMechanics = ({ refresh }) => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="relative overflow-x-auto">
-      <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-5">
+    <div className="relative overflow-x-auto w-full flex flex-col justify-center items-center">
+      <table className="w-1/2 text-sm rtl:text-right text-gray-500 dark:text-gray-400 mt-5 text-center">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" className="px-6 py-3 text-center">

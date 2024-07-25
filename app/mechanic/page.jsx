@@ -13,7 +13,7 @@ const MechanicPage = () => {
 
   return (
     <section className="flex flex-col h-screen justify-start items-center p-5 bg-white">
-      <h1 className="text-5xl p-5 font-bold">Administrar Mecanicos</h1>
+      <h1 className="md:text-5xl text-2xl p-5 font-bold">Administrar Mecanicos</h1>
       <FormMechanics triggerRefresh={triggerRefresh} />
 
       <ListMechanics refresh={refresh} />
