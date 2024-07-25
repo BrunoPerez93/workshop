@@ -13,6 +13,22 @@ const FormDetalleTrabajo = () => {
   const [manoDeObra, setManoDeObra] = useState(0);
   const [repuesto, setRepuesto] = useState(0);
   const [total, setTotal] = useState(0);
+  const [formData, setFormData] = useState({
+    matricula: "",
+    km: "",
+    year: "",
+    fallo: "",
+    repuestos: "",
+    observaciones: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const handleManoDeObraChange = (event) => {
     const value = parseFloat(event.target.value) || 0;
@@ -41,8 +57,19 @@ const FormDetalleTrabajo = () => {
         </div>
       </div>
       <div className="flex mb-5 flex-wrap w-full justify-center items-center">
-        <InputForm name="Matricula" asterisco="*" />
-        <InputForm name="KM" />
+        <InputForm
+          name="matricula"
+          asterisco="*"
+          label="Matricula"
+          value={formData.matricula}
+          onChange={handleInputChange}
+        />
+        <InputForm
+          name="km"
+          label="KM"
+          value={formData.km}
+          onChange={handleInputChange}
+        />
       </div>
       <div className="flex mb-5 flex-wrap w-full justify-center items-center">
         <div className="mr-2 mb-5 w-full">
@@ -52,12 +79,33 @@ const FormDetalleTrabajo = () => {
             name="Cliente"
           />
         </div>
-        <InputForm name="Año" />
+        <InputForm
+          name="year"
+          label="Año"
+          value={formData.year}
+          onChange={handleInputChange}
+        />
       </div>
 
-      <InputForm name="Fallo segun reclamacion del cliente" asterisco="*" />
-      <InputForm name="Repuestos: nuevo, alternativo, original o suministrado por el cliente" />
-      <InputForm name="Observaciones" />
+      <InputForm
+        name="fallo"
+        asterisco="*"
+        label="Fallo segun reclamacion del cliente"
+        value={formData.fallo}
+        onChange={handleInputChange}
+      />
+      <InputForm
+        name="repuestos"
+        label="Repuestos: nuevo, alternativo, original o suministrado por el cliente"
+        value={formData.repuestos}
+        onChange={handleInputChange}
+      />
+      <InputForm
+        name="observaciones"
+        label="Observaciones"
+        value={formData.observaciones}
+        onChange={handleInputChange}
+      />
       <SelectMechanic name="Tecnico" />
 
       <h2 className="my-3 font-bold text-2xl">Precios</h2>
