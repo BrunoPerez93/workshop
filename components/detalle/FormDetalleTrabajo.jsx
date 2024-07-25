@@ -29,14 +29,14 @@ const FormDetalleTrabajo = () => {
   return (
     <form className="w-full flex flex-col justify-center items-center">
       <div className="flex mb-5 flex-wrap w-full justify-center items-center">
-        <div className="mr-2 ">
+        <div className="mr-2 w-full ">
           <SelectBrand
             name="Marca"
             selectedBrand={selectedBrand}
             setSelectedBrand={setSelectedBrand}
           />
         </div>
-        <div className="ml-2">
+        <div className="mr-2 w-full">
           <SelectModel name="Modelo" selectedBrand={selectedBrand} />
         </div>
       </div>
@@ -45,7 +45,7 @@ const FormDetalleTrabajo = () => {
         <InputForm name="KM" />
       </div>
       <div className="flex mb-5 flex-wrap w-full justify-center items-center">
-        <div className="mr-2 mb-5">
+        <div className="mr-2 mb-5 w-full">
           <SelectClient
             selectedClient={selectedClient}
             setSelectedClient={setSelectedClient}
@@ -74,6 +74,10 @@ const FormDetalleTrabajo = () => {
         onChange={handleRepuestoChange}
       />
       <InputForm name="Total" type="number" value={total || ""} readOnly />
+
+      <button type="submit" className="btn-style">
+        Crear Trabajo
+      </button>
     </form>
   );
 };

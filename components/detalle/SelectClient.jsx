@@ -112,8 +112,8 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col justify-center items-center">
-        <div className="flex justify-center items-center w-full">
-          <div className="relative w-full h-10 mr-5">
+        <div className="flex justify-center items-center w-full  flex-col md:flex-row">
+          <div className="relative w-full h-10 md:mr-5">
             <select
               value={selectedClient || ""}
               onChange={(e) => setSelectedClient(e.target.value)}
@@ -131,20 +131,22 @@ const SelectClient = ({ selectedClient, setSelectedClient, name }) => {
               {name} *
             </label>
           </div>
-          <button
-            type="button"
-            className="btn-style mr-2"
-            onClick={handleOpenCreateModal}
-          >
-            Agregar
-          </button>
-          <button
-            type="button"
-            className="btn-style"
-            onClick={handleOpenEditModal}
-          >
-            Editar
-          </button>
+          <div className="flex w-full">
+            <button
+              type="button"
+              className="btn-style mr-2"
+              onClick={handleOpenCreateModal}
+            >
+              Agregar
+            </button>
+            <button
+              type="button"
+              className="btn-style"
+              onClick={handleOpenEditModal}
+            >
+              Editar
+            </button>
+          </div>
         </div>
         {messages.success && (
           <p className="mt-2 text-green-500">{messages.success}</p>

@@ -54,7 +54,7 @@ const SelectModel = ({ selectedBrand, name }) => {
       const response = await fetch("/api/modelos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newModelName, brand_id: brandId }), 
+        body: JSON.stringify({ name: newModelName, brand_id: brandId }),
       });
 
       const result = await response.json();
@@ -79,7 +79,7 @@ const SelectModel = ({ selectedBrand, name }) => {
         body: JSON.stringify({
           id: modelId,
           name: editedModelName,
-          brand_id: brandId, 
+          brand_id: brandId,
         }),
       });
 
@@ -98,10 +98,10 @@ const SelectModel = ({ selectedBrand, name }) => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full">
       <div className="flex flex-col justify-center items-center">
-        <div className="flex justify-center items-center w-full">
-          <div className="relative w-full  h-10 mr-5">
+        <div className="flex justify-center items-center w-full flex-col md:flex-row">
+          <div className="relative w-full  h-10 md:mr-5">
             <select
               value={selectedModelId || ""}
               onChange={(e) => setSelectedModelId(e.target.value)}
@@ -110,28 +110,35 @@ const SelectModel = ({ selectedBrand, name }) => {
               <option value="" disabled>
                 Seleccione un modelo...
               </option>
-              {Array.isArray(models) && models.map((model) => (
-                <option key={model._id} value={model._id}>
-                  {model.name}
-                </option>
-              ))}
+              {Array.isArray(models) &&
+                models.map((model) => (
+                  <option key={model._id} value={model._id}>
+                    {model.name}
+                  </option>
+                ))}
             </select>
-            <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:flex-grow before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900">
+            <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900">
               {name} *
             </label>
           </div>
 
-          <button
-            type="button"
-            className="mr-2 btn-style"
-            onClick={handleAgregarClick}
-          >
-            Agregar
-          </button>
+          <div className="flex w-full">
+            <button
+              type="button"
+              className="mr-2 btn-style"
+              onClick={handleAgregarClick}
+            >
+              Agregar
+            </button>
 
-          <button type="button" className="btn-style" onClick={handleEditClick}>
-            Editar
-          </button>
+            <button
+              type="button"
+              className="btn-style"
+              onClick={handleEditClick}
+            >
+              Editar
+            </button>
+          </div>
         </div>
 
         {isCreateModalOpen && (
@@ -161,14 +168,10 @@ const SelectModel = ({ selectedBrand, name }) => {
         )}
       </div>
       {messages.success && (
-        <div className="message-success text-green-500">
-          {messages.success}
-        </div>
+        <div className="message-success text-green-500">{messages.success}</div>
       )}
       {messages.error && (
-        <div className="message-error text-red-500">
-          {messages.error}
-        </div>
+        <div className="message-error text-red-500">{messages.error}</div>
       )}
     </div>
   );
