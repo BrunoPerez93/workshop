@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import SelectBrand from "./SelectBrand";
 import SelectModel from "./SelectModel";
@@ -9,7 +7,9 @@ import SelectMechanic from "./SelectMechanic";
 
 const FormDetalleTrabajo = () => {
   const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
   const [selectedClient, setSelectedClient] = useState("");
+  const [selectedMechanic, setSelectedMechanic] = useState(""); // Add this line
   const [manoDeObra, setManoDeObra] = useState(0);
   const [repuesto, setRepuesto] = useState(0);
   const [total, setTotal] = useState(0);
@@ -42,8 +42,51 @@ const FormDetalleTrabajo = () => {
     setTotal(manoDeObra + value);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (!selectedModel || !selectedMechanic) {
+      console.error("Model and Mechanic are required");
+      return;
+    }
+  
+    const dataToSend = {
+      ...formData,
+      brand: selectedBrand,
+      model: selectedModel,
+      client: selectedClient,
+      tecnico: selectedMechanic, // Ensure selectedMechanic is included
+      manoDeObra,
+      repuesto,
+      total,
+    };
+  
+    console.log("Submitting data:", dataToSend);
+  
+    try {
+      const response = await fetch("/api/works", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+  
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        console.error("Failed to create work:", errorResponse);
+        throw new Error(errorResponse.error || "Failed to create work");
+      }
+  
+      const result = await response.json();
+      console.log("Work created successfully:", result);
+    } catch (error) {
+      console.error("Error creating work:", error);
+    }
+  };
+
   return (
-    <form className="w-full flex flex-col justify-center items-center">
+    <form className="w-full flex flex-col justify-center items-center" onSubmit={handleSubmit}>
       <div className="flex mb-5 flex-wrap w-full justify-center items-center">
         <div className="mr-2 w-full ">
           <SelectBrand
@@ -53,7 +96,12 @@ const FormDetalleTrabajo = () => {
           />
         </div>
         <div className="mr-2 w-full">
-          <SelectModel name="Modelo" selectedBrand={selectedBrand} />
+          <SelectModel
+            name="Modelo"
+            selectedBrand={selectedBrand}
+            selectedModel={selectedModel}
+            setSelectedModel={setSelectedModel}
+          />
         </div>
       </div>
       <div className="flex mb-5 flex-wrap w-full justify-center items-center">
@@ -106,7 +154,11 @@ const FormDetalleTrabajo = () => {
         value={formData.observaciones}
         onChange={handleInputChange}
       />
-      <SelectMechanic name="Tecnico" />
+      <SelectMechanic 
+        name="Tecnico"
+        selectedMechanic={selectedMechanic} // Pass selectedMechanic
+        setSelectedMechanic={setSelectedMechanic} // Pass setSelectedMechanic
+      />
 
       <h2 className="my-3 font-bold text-2xl">Precios</h2>
       <InputForm
