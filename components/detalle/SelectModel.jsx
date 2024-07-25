@@ -16,6 +16,12 @@ const SelectModel = ({ selectedBrand, name }) => {
   const [selectedModelId, setSelectedModelId] = useState(null);
 
   useEffect(() => {
+    if (selectedBrand) {
+      fetchModels(); // Fetch models when a brand is selected
+    }
+  }, [selectedBrand, fetchModels]);
+
+  useEffect(() => {
     if (Array.isArray(models) && models.length > 0) {
       setSelectedModelId(models[0]._id);
     }
@@ -101,7 +107,7 @@ const SelectModel = ({ selectedBrand, name }) => {
     <div className="flex flex-col w-full">
       <div className="flex flex-col justify-center items-center">
         <div className="flex justify-center items-center w-full flex-col md:flex-row">
-          <div className="relative w-full  h-10 md:mr-5">
+          <div className="relative w-full h-10 md:mr-5">
             <select
               value={selectedModelId || ""}
               onChange={(e) => setSelectedModelId(e.target.value)}
