@@ -19,9 +19,9 @@ const SearchPage = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        data.sort((a, b) => b._id - a._id);
+        data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setWorks(data);
-        setFilteredWorks(data); 
+        setFilteredWorks(data);
       } catch (error) {
         console.error(error.message);
       }
@@ -32,7 +32,7 @@ const SearchPage = () => {
 
   const handleSearchResults = (results) => {
     setFilteredWorks(results);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const indexOfLastWork = currentPage * worksPerPage;

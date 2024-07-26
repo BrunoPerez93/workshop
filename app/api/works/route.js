@@ -77,17 +77,40 @@ export async function GET(req) {
 
     const { searchParams } = new URL(req.url);
     const matricula = searchParams.get('matricula');
-    const name = searchParams.get('name');
+    const clientName = searchParams.get('clientName');
 
     let query = {};
     if (matricula) {
-      query.matricula = new RegExp(matricula, 'i'); 
+      query.matricula = new RegExp(matricula, 'i');
     }
-    const works = await Work.find(query)
-      .populate('brand', 'name')
-      .populate('model', 'name')
-      .populate('tecnico', 'username')
-      .populate('client', 'name lastname cellphone');
+
+    let works;
+    if (clientName) {
+      console.log("Searching by client name:", clientName);
+      const clients = await Client.find({
+        $or: [
+          { name: new RegExp(clientName, 'i') },
+          { lastname: new RegExp(clientName, 'i') }
+        ]
+      });
+
+      const clientIds = clients.map(client => client._id);
+
+      works = await Work.find({ 
+        client: { $in: clientIds }
+      })
+        .populate('brand', 'name')
+        .populate('model', 'name')
+        .populate('tecnico', 'username')
+        .populate('client', 'name lastname cellphone');
+
+    } else {
+      works = await Work.find(query)
+        .populate('brand', 'name')
+        .populate('model', 'name')
+        .populate('tecnico', 'username')
+        .populate('client', 'name lastname cellphone');
+    }
 
     return NextResponse.json(works);
   } catch (error) {
