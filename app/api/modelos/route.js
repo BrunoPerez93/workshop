@@ -12,7 +12,6 @@ export async function GET(req) {
     const models = await Model.find(filter).populate("brand_id");
     return NextResponse.json(models);
   } catch (error) {
-    console.error("Error retrieving models:", error);
     return NextResponse.json({ error: "Error retrieving models" }, { status: 500 });
   }
 }

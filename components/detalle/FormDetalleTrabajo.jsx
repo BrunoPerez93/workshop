@@ -1,7 +1,10 @@
 import { useState } from "react";
 import FormFields from "./FormFields";
+import { useRouter } from "next/navigation";
 
 const FormDetalleTrabajo = () => {
+  const router = useRouter();
+
   const initialFormData = {
     matricula: "",
     km: "",
@@ -92,6 +95,7 @@ const FormDetalleTrabajo = () => {
         setMessages({ success: "", error: "" });
       }, 3000);
       setMessages({ success: "Trabajo Ingresado Correctamente", error: "" });
+      router.push(`/search`);
     } catch (error) {
       setTimeout(() => {
         setMessages({ success: "", error: "" });

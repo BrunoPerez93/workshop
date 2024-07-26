@@ -21,7 +21,6 @@ const SelectModel = ({ selectedBrand, selectedModel, setSelectedModel, name }) =
 
   useEffect(() => {
     if (Array.isArray(models) && models.length > 0) {
-      console.log("Models:", models);
       setSelectedModelId(models[0]._id);
     }
   }, [models]);
