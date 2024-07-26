@@ -31,7 +31,6 @@ const FormMechanic = ({ triggerRefresh }) => {
       const result = await response.json();
       triggerRefresh();
       setFormData({ username: "" });
-      console.log(result);
     } catch (error) {
       console.error(error);
     }
