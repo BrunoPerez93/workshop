@@ -1,9 +1,5 @@
 import { useState } from "react";
-import SelectBrand from "./SelectBrand";
-import SelectModel from "./SelectModel";
-import SelectClient from "./SelectClient";
-import InputForm from "../InputForm";
-import SelectMechanic from "./SelectMechanic";
+import FormFields from "./FormFields";
 
 const FormDetalleTrabajo = () => {
   const initialFormData = {
@@ -115,100 +111,22 @@ const FormDetalleTrabajo = () => {
         className="w-full flex flex-col justify-center items-center"
         onSubmit={handleSubmit}
       >
-        <div className="flex mb-5 flex-wrap w-full justify-center items-center">
-          <div className="mr-2 w-full ">
-            <SelectBrand
-              name="Marca"
-              selectedBrand={selectedBrand}
-              setSelectedBrand={setSelectedBrand}
-            />
-          </div>
-          <div className="mr-2 w-full">
-            <SelectModel
-              name="Modelo"
-              selectedBrand={selectedBrand}
-              selectedModel={selectedModel}
-              setSelectedModel={setSelectedModel}
-            />
-          </div>
-        </div>
-        <div className="flex mb-5 flex-wrap w-full justify-center items-center">
-          <InputForm
-            name="matricula"
-            asterisco="*"
-            label="Matricula"
-            value={formData.matricula}
-            onChange={handleInputChange}
-          />
-          <InputForm
-            name="km"
-            label="KM"
-            value={formData.km}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="flex mb-5 flex-wrap w-full justify-center items-center">
-          <div className="mr-2 mb-5 w-full">
-            <SelectClient
-              selectedClient={selectedClient}
-              setSelectedClient={setSelectedClient}
-              name="Cliente"
-            />
-          </div>
-          <InputForm
-            name="year"
-            label="Año"
-            value={formData.year}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <InputForm
-          name="fallo"
-          asterisco="*"
-          label="Fallo segun reclamacion del cliente"
-          value={formData.fallo}
-          onChange={handleInputChange}
-        />
-        <InputForm
-          name="repuestos"
-          label="Repuestos: nuevo, alternativo, original o suministrado por el cliente"
-          value={formData.repuestos}
-          onChange={handleInputChange}
-        />
-        <InputForm
-          name="observaciones"
-          label="Observaciones"
-          value={formData.observaciones}
-          onChange={handleInputChange}
-        />
-        <SelectMechanic
-          name="Tecnico"
+        <FormFields
+          selectedBrand={selectedBrand}
+          setSelectedBrand={setSelectedBrand}
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+          selectedClient={selectedClient}
+          setSelectedClient={setSelectedClient}
           selectedMechanic={selectedMechanic}
           setSelectedMechanic={setSelectedMechanic}
-        />
-
-        <h2 className="my-3 font-bold text-2xl">Precios</h2>
-        <InputForm
-          name="Mano de obra"
-          type="number"
-          value={manoDeObra || ""}
-          onChange={handleManoDeObraChange}
-          label="Mano de obra"
-        />
-        <InputForm
-          name="Repuesto"
-          type="number"
-          value={repuesto || ""}
-          onChange={handleRepuestoChange}
-          label="Repuesto"
-        />
-        <InputForm
-          name="Total"
-          type="number"
-          value={total || ""}
-          readOnly
-          label="Total"
+          manoDeObra={manoDeObra}
+          handleManoDeObraChange={handleManoDeObraChange}
+          repuesto={repuesto}
+          handleRepuestoChange={handleRepuestoChange}
+          total={total}
+          formData={formData}
+          handleInputChange={handleInputChange}
         />
 
         <button type="submit" className="btn-style">

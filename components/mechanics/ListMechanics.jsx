@@ -1,6 +1,8 @@
-'use client';
+"use client";
 
+import PaginationButtons from "@/components/PaginationButtons";
 import React, { useEffect, useState } from "react";
+import TableMechanics from "./TableMechanics";
 
 const ListMechanics = ({ refresh }) => {
   const [mechanics, setMechanics] = useState([]);
@@ -35,47 +37,14 @@ const ListMechanics = ({ refresh }) => {
 
   return (
     <div className="relative overflow-x-auto w-full flex flex-col justify-center items-center">
-      <table className="w-1/2 text-sm rtl:text-right text-gray-500 dark:text-gray-400 mt-5 text-center">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            <th scope="col" className="px-6 py-3 text-center">
-              Name
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentMechanics.map((mechanic) => (
-            <tr
-              key={mechanic.id}
-              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center"
-            >
-              <td
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-              >
-                {mechanic.username}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+     <TableMechanics currentMechanics={currentMechanics}/>
 
-      {/* Pagination controls */}
-      <div className="mt-5 flex justify-center items-center">
-        <button
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="px-3 py-1 mr-2 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm text-gray-700 dark:text-gray-300 rounded"
-        >
-          Previous
-        </button>
-        <button
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentMechanics.length < mechanicsPerPage || currentMechanics.length === 0}
-          className="px-3 py-1 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm text-gray-700 dark:text-gray-300 rounded"
-        >
-          Next
-        </button>
-      </div>
+      <PaginationButtons
+        currentPage={currentPage}
+        itemsPerPage={mechanicsPerPage}
+        totalItems={mechanics.length}
+        paginate={paginate}
+      />
     </div>
   );
 };

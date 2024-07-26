@@ -14,17 +14,15 @@ const SelectModel = ({ selectedBrand, selectedModel, setSelectedModel, name }) =
   const [selectedModelId, setSelectedModelId] = useState(null);
 
   useEffect(() => {
-    console.log("Selected Brand:", selectedBrand);
-    console.log("Selected Model ID:", selectedModelId);
     if (selectedBrand) {
-      fetchModels(); // Fetch models when a brand is selected
+      fetchModels();
     }
   }, [selectedBrand, fetchModels]);
 
   useEffect(() => {
     if (Array.isArray(models) && models.length > 0) {
       console.log("Models:", models);
-      setSelectedModelId(models[0]._id); // Set default selected model
+      setSelectedModelId(models[0]._id);
     }
   }, [models]);
 
@@ -114,7 +112,7 @@ const SelectModel = ({ selectedBrand, selectedModel, setSelectedModel, name }) =
               onChange={(e) => {
                 const modelId = e.target.value;
                 setSelectedModelId(modelId);
-                setSelectedModel(modelId);  // Update the selectedModel state in the parent component
+                setSelectedModel(modelId); 
               }}
               className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
             >

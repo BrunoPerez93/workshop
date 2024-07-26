@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { db } from "@/utils/db";
 import Work from "@/models/Work";
-import Brand from '@/models/Brand'; // Adjust path as needed
-import Model from '@/models/Model'; // Adjust path as needed
-import Mechanic from '@/models/Mechanic'; // Adjust path as needed
+import Brand from '@/models/Brand'; 
+import Model from '@/models/Model'; 
+import Mechanic from '@/models/Mechanic'; 
 import Client from '@/models/Client'; 
 import { NextResponse } from "next/server";
 
@@ -26,22 +26,6 @@ export async function POST(req) {
       total,
       client,
     } = await req.json();
-
-    console.log("Received data:", {
-      brand,
-      model,
-      matricula,
-      km,
-      year,
-      fallo,
-      repuestos,
-      observaciones,
-      tecnico,
-      manoDeObra,
-      repuesto,
-      total,
-      client,
-    });
 
     if (!brand || !model || !matricula || !manoDeObra || !repuesto || !total || !client) {
       console.error("Required fields are missing");
@@ -77,8 +61,6 @@ export async function POST(req) {
 
     const savedWork = await newWork.save();
 
-    console.log("Work saved successfully:", savedWork);
-
     return NextResponse.json(savedWork, { status: 201 });
   } catch (error) {
     console.error("Error saving work:", error);
@@ -89,15 +71,23 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(req) {
   try {
-    await db(); // Ensure database connection
+    await db();
 
-    const works = await Work.find({})
-      .populate('brand', 'name')   // Populate 'brand' field with 'name'
-      .populate('model', 'name')   // Populate 'model' field with 'name'
-      .populate('tecnico', 'username') // Populate 'tecnico' field with 'username'
-      .populate('client', 'name'); // Populate 'client' field with 'name'
+    const { searchParams } = new URL(req.url);
+    const matricula = searchParams.get('matricula');
+    const name = searchParams.get('name');
+
+    let query = {};
+    if (matricula) {
+      query.matricula = new RegExp(matricula, 'i'); 
+    }
+    const works = await Work.find(query)
+      .populate('brand', 'name')
+      .populate('model', 'name')
+      .populate('tecnico', 'username')
+      .populate('client', 'name lastname cellphone');
 
     return NextResponse.json(works);
   } catch (error) {
@@ -105,4 +95,3 @@ export async function GET() {
     return NextResponse.json({ error: "Error retrieving works" }, { status: 500 });
   }
 }
-

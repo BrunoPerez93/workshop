@@ -1,5 +1,5 @@
 import { db } from "@/utils/db";
-import Brand from "@/models/Brand"; // Ensure this path is correct
+import Brand from "@/models/Brand"; 
 import { NextResponse } from "next/server";
 
 export async function GET() {
