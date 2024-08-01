@@ -15,10 +15,13 @@ const InputSearch = ({ onSearchResults }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const query =
-      searchBy === "matricula"
-        ? `matricula=${searchTerm}`
-        : `clientName=${searchTerm}`;
+    let query = "";
+    if (searchTerm) {
+      query =
+        searchBy === "matricula"
+          ? `matricula=${searchTerm}`
+          : `clientName=${searchTerm}`;
+    }
     fetch(`/api/works?${query}`)
       .then((response) => response.json())
       .then((data) => {
