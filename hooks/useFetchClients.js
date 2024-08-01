@@ -6,16 +6,17 @@ const useFetchClients = () => {
   const [clients, setClients] = useState([]);
 
   useEffect(() => {
-    const fetchBrands = async () => {
+    const fetchClients = async () => {
       try {
         const response = await fetch(`/api/clients`);
         const data = await response.json();
+        console.log(data);
         setClients(data);
       } catch (error) {
         console.error("Error fetching clients", error);
       }
     };
-    fetchBrands();
+    fetchClients();
   }, []);
 
   return { clients };
